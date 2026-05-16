@@ -28,7 +28,7 @@ dan untuk realtime private chat masihhh memiliki kekurangan yang masihhh saya at
 untuk group dan status online masihhh dalam rancangan
 saya fokus di realtime dulu karena belum teratasi
 
-karena itu saya push ke git hub dulu untuk progres kali ini dan ini sudah memakan waktu 1 minggu
+karena itu saya push ke git hub dulu untuk progres kali ini dan ini sudah memakan waktu 1 minggu di minggu pertama
 
 
 
