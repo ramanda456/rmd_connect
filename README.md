@@ -1,40 +1,111 @@
-Progress project web real time chat aplication
+# RMD Connect
+## Deskripsi
 
-saya menamakan project ini rmd-connect
+RMD Connect adalah aplikasi chat realtime berbasis web menggunakan Laravel dan WebSocket. 
 
-untuk seminggu ini sayaa sudahh mengerjakan:
+# Fitur Utama
+* Login & Register
+* Dashboard daftar pengguna
+* Private chat realtime
+* Status online/offline realtime
+* Riwayat pesan tersimpan di database
 
-Selama proses pengerjaan, ini beberapa hal yang sudah saya buat:
+# Teknologi yang Digunakan
 
-- Membuat project awal menggunakan framework web (Laravel)
-composer,artisan make,artisan intal,menggunkan breeze,instal npm dan merunkan npm dev
-- Rancang struktur folder project
-migration,auth,model ,controler dan lain lain, views resources
-- Set up database
-create db, root di env,create tabel untuk user pesan group dan lain laim
-jalankan migration setelah itu buat model ,artisan make:model
--Buat dashboard
-set up controlers dan views nya
+## Backend
+* PHP 8+
+* Laravel 12
+* Laravel Reverb
+* MySQL
+## Frontend
+* Bootstrap 5
+* JavaScript
+* Laravel Echo
+* Pusher JS
 
-- Lanjut Membuat fitur dasar aplikasi
-private chat realtime dan web socket nya ,instal bbroadcasting nya dan juga laravel reverb untuk web socket nya,set up reverb di .env dan instal laravel echo js untuk client user
+# Cara Install
 
-firur login dan register sudh tersedia
-untuk database sudah connect ke project menggunakan mysql
+## 1. Clone Repository
 
-dan untuk realtime private chat masihhh memiliki kekurangan yang masihhh saya atasi
-:pesan tidak muncul karena harus refresh browser dulu
+```bash
+git clone https://github.com/ramanda456/rmd_connect.git
+cd rmd_connect
+```
 
-untuk group dan status online masihhh dalam rancangan
-saya fokus di realtime dulu karena belum teratasi
+## 2. Install Dependency
 
-karena itu saya push ke git hub dulu untuk progres kali ini dan ini sudah memakan waktu 1 minggu di minggu pertama
+```bash
+composer install
+npm install
+```
 
+## 3. Copy File .env
 
+```bash
+copy .env.example .env
+```
 
+## 4. Generate Key
 
-by ramanda arip 240180057
+```bash
+php artisan key:generate
+```
 
+## 5. Buat Database
 
+Buat database bernama:
 
+```text
+rmd_connect
+```
+
+Atur koneksi database di file `.env`.
+
+## 6. Jalankan Migration
+
+```bash
+php artisan migrate
+```
+
+## 7. Install Broadcasting
+
+```bash
+php artisan install:broadcasting
+```
+
+Pilih:
+
+```text
+reverb
+```
+
+## 8. Install Echo & Pusher
+
+```bash
+npm install --save-dev laravel-echo pusher-js
+```
+
+---
+
+# Menjalankan Aplikasi
+
+Jalankan 3 terminal:
+
+## Terminal 1
+
+```bash
+php artisan serve
+```
+
+## Terminal 2
+
+```bash
+php artisan reverb:start
+```
+
+## Terminal 3
+
+```bash
+npm run dev
+```
 
