@@ -26,5 +26,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password', 'is_online', 'last_seen_at'
     ];
+    protected $casts = [
+    'email_verified_at' => 'datetime',
+    'password'          => 'hashed',
+    'last_seen_at'      => 'datetime',   // ← tambahkan ini
+    'is_online'         => 'boolean',    // ← tambahkan ini
+    ];
 
 }

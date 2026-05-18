@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\User;                    
+use App\Events\UserStatusChanged;       
 
 class AuthenticatedSessionController extends Controller
 {
@@ -28,6 +30,19 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = User::find(Auth::id());
+
+        if ($user) {
+
+            $user->is_online = true;
+
+            $user->last_seen_at = now();
+
+            $user->save();
+
+            broadcast(new UserStatusChanged($user));
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -36,6 +51,17 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        
+        $user = User::find(Auth::id());
+
+        if ($user) {
+            $user->is_online    = false;
+            $user->last_seen_at = now();
+            $user->save();
+
+            broadcast(new UserStatusChanged($user));
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

@@ -4,237 +4,149 @@
 <div class="container mt-4" style="max-width: 700px;">
     <div class="card">
 
-        {{-- Header chat --}}
         <div class="card-header d-flex align-items-center gap-2">
-            <a href="{{ route('dashboard') }}"
-               class="btn btn-sm btn-outline-secondary">
-                ←
-            </a>
+            <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-secondary">←</a>
 
             <strong>{{ $user->name }}</strong>
 
-            <span id="status-badge"
-                  class="badge {{ $user->is_online ? 'bg-success' : 'bg-secondary' }}">
+            <span
+                id="chat-user-status"
+                class="badge {{ $user->is_online ? 'bg-success' : 'bg-secondary' }}">
                 {{ $user->is_online ? 'Online' : 'Offline' }}
             </span>
         </div>
 
-        {{-- Area pesan --}}
-        <div id="messages"
-             class="card-body"
-             style="height: 400px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
 
+        <div id="messages" class="card-body"
+             style="height:400px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
             @foreach($messages as $msg)
-
                 <div class="d-flex {{ $msg->sender_id === Auth::id() ? 'justify-content-end' : 'justify-content-start' }}">
-
-                    <div class="rounded p-2 px-3
-                        {{ $msg->sender_id === Auth::id()
-                            ? 'bg-primary text-white'
-                            : 'bg-light'
-                        }}"
-                        style="max-width:70%;">
-
-                        <small class="d-block fw-bold">
-                            {{ $msg->sender->name }}
-                        </small>
-
+                    <div class="rounded p-2 px-3 {{ $msg->sender_id === Auth::id() ? 'bg-primary text-white' : 'bg-light border' }}"
+                         style="max-width:70%;">
+                        <small class="d-block fw-bold">{{ $msg->sender->name }}</small>
                         {{ $msg->body }}
-
-                        <small class="d-block text-end opacity-75"
-                               style="font-size:0.7rem">
-
+                        <small class="d-block text-end opacity-75" style="font-size:0.7rem">
                             {{ $msg->created_at->format('H:i') }}
-
                         </small>
                     </div>
                 </div>
-
             @endforeach
         </div>
 
-        {{-- Input kirim pesan --}}
         <div class="card-footer">
-
             <div class="input-group">
-
-                <input
-                    type="text"
-                    id="message-input"
-                    class="form-control"
-                    placeholder="Ketik pesan..."
-                    autocomplete="off"
-                >
-
-                <button id="send-btn"
-                        class="btn btn-primary">
-                    Kirim
-                </button>
-
+                <input type="text" id="message-input" class="form-control"
+                       placeholder="Ketik pesan..." autocomplete="off">
+                <button id="send-btn" class="btn btn-primary">Kirim</button>
             </div>
         </div>
+
     </div>
 </div>
 @endsection
 
-
 @push('scripts')
-
-{{-- Data untuk JavaScript --}}
-<div id="chat-data"
-     data-receiver-id="{{ $user->id }}"
-     data-auth-user-id="{{ Auth::id() }}"
-     data-send-url="{{ route('chat.send') }}">
-</div>
-
-
 <script>
+const CHAT_RECEIVER_ID  = parseInt("{{ $user->id }}");
+const CHAT_AUTH_USER_ID = parseInt("{{ Auth::id() }}");
+const CHAT_SEND_URL     = "{{ route('chat.send') }}";
+const CHAT_CSRF         = document.querySelector('meta[name="csrf-token"]').content;
 
-const chatData = document.getElementById('chat-data');
+document.getElementById('messages').scrollTop =
+    document.getElementById('messages').scrollHeight;
 
-const RECEIVER_ID = chatData.dataset.receiverId;
-const AUTH_USER_ID = chatData.dataset.authUserId;
-const SEND_URL = chatData.dataset.sendUrl;
-
-const CSRF_TOKEN =
-    document.querySelector('meta[name="csrf-token"]').content;
-
-
-function appendMessage(body, senderName, isMine, time)
-{
-    const messages = document.getElementById('messages');
-
+function chatAppendMessage(body, senderName, isMine) {
+    const box = document.getElementById('messages');
     const div = document.createElement('div');
-
-    div.className =
-        'd-flex ' +
-        (isMine ? 'justify-content-end'
-                : 'justify-content-start');
-
+    div.className = 'd-flex ' + (isMine ? 'justify-content-end' : 'justify-content-start');
     div.innerHTML = `
-        <div class="rounded p-2 px-3
-            ${isMine ? 'bg-primary text-white'
-                     : 'bg-light'}"
-            style="max-width:70%">
-
-            <small class="d-block fw-bold">
-                ${senderName}
+        <div class="rounded p-2 px-3 ${isMine ? 'bg-primary text-white' : 'bg-light border'}"
+             style="max-width:70%; margin-bottom:4px;">
+            <small class="d-block fw-bold">${senderName}</small>
+            <span>${body}</span>
+            <small class="d-block text-end opacity-75" style="font-size:.7rem">
+                ${new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}
             </small>
+        </div>`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
 
-            ${body}
+document.getElementById('send-btn').addEventListener('click', function () {
+    const input = document.getElementById('message-input');
+    const body  = input.value.trim();
+    if (!body) return;
+    this.disabled = true;
 
-            <small class="d-block text-end opacity-75"
-                   style="font-size:.7rem">
+    fetch(CHAT_SEND_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': CHAT_CSRF,
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({ body: body, receiver_id: CHAT_RECEIVER_ID })
+    })
+    .then(res => res.json())
+    .then(data => {
+        chatAppendMessage(data.message.body, 'Anda', true);
+        input.value = '';
+        input.focus();
+    })
+    .catch(err => console.error('❌ Gagal kirim:', err))
+    .finally(() => { this.disabled = false; });
+});
 
-                ${time}
+document.getElementById('message-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') document.getElementById('send-btn').click();
+});
 
-            </small>
-        </div>
-    `;
+function startListening() {
+    const ids  = [CHAT_AUTH_USER_ID, CHAT_RECEIVER_ID].sort((a, b) => a - b);
+    const chan  = `chat.${ids[0]}.${ids[1]}`;
+    console.log('📡 Listening ke channel:', chan);
 
-    messages.appendChild(div);
+    window.Echo.private(chan)
+        .listen('.message.sent', function (data) {
+            console.log('📨 Pesan masuk:', data);
+            if (data.message.sender_id !== CHAT_AUTH_USER_ID) {
+                chatAppendMessage(data.message.body, data.message.sender.name, false);
+            }
+        });
+}
 
-    messages.scrollTop = messages.scrollHeight;
+// Echo dari app.js mungkin belum connected saat script ini jalan
+// Tunggu event 'echo-ready' yang di-dispatch dari app.js
+if (window.Echo && window.Echo.connector.pusher.connection.state === 'connected') {
+    startListening();
+} else {
+    window.addEventListener('echo-ready', startListening);
 }
 
 
-// Kirim pesan
-document.getElementById('send-btn')
-.addEventListener('click', function() {
 
-    const input = document.getElementById('message-input');
-
-    const body = input.value.trim();
-
-    if (!body) return;
+// LISTEN STATUS ONLINE / OFFLINE REALTIME
 
 
-    fetch(SEND_URL, {
+window.Echo.channel('presence')
+    .listen('.user.status', function (data) {
 
-        method: 'POST',
+        console.log('👤 Status user berubah:', data);
 
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': CSRF_TOKEN
-        },
+        // hanya update badge user yang sedang dibuka chatnya
+        if (parseInt(data.userId) === CHAT_RECEIVER_ID) {
 
-        body: JSON.stringify({
-            body,
-            receiver_id: RECEIVER_ID
-        })
+            const badge = document.getElementById('chat-user-status');
 
-    })
-
-    .then(res => res.json())
-
-    .then(data => {
-
-        appendMessage(
-            data.message.body,
-            'Anda',
-            true,
-            new Date().toLocaleTimeString(
-                'id-ID',
-                {
-                    hour:'2-digit',
-                    minute:'2-digit'
-                }
-            )
-        );
-
-        input.value = '';
+            if (data.isOnline) {
+                badge.className = 'badge bg-success';
+                badge.textContent = 'Online';
+            } else {
+                badge.className = 'badge bg-secondary';
+                badge.textContent = 'Offline';
+            }
+        }
     });
-});
-
-
-// Enter untuk kirim
-document.getElementById('message-input')
-.addEventListener('keypress', function(e) {
-
-    if (e.key === 'Enter') {
-
-        document.getElementById('send-btn').click();
-    }
-});
-
-
-// Realtime listener
-const ids =
-    [AUTH_USER_ID, RECEIVER_ID]
-    .sort((a,b) => a - b);
-
-const channelName =
-    `chat.${ids[0]}.${ids[1]}`;
-
-
-window.Echo.private(channelName)
-
-.listen('.message.sent', (data) => {
-
-    const isMine =
-        data.message.sender_id == AUTH_USER_ID;
-
-    if (!isMine) {
-
-        appendMessage(
-
-            data.message.body,
-
-            data.message.sender.name,
-
-            false,
-
-            new Date().toLocaleTimeString(
-                'id-ID',
-                {
-                    hour:'2-digit',
-                    minute:'2-digit'
-                }
-            )
-        );
-    }
-});
 
 </script>
-
 @endpush
