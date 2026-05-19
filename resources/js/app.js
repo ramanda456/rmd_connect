@@ -21,10 +21,10 @@ window.Echo = new Echo({
 });
 
 window.Echo.connector.pusher.connection.bind('connected', function () {
-    console.log('✅ Reverb WebSocket TERHUBUNG!');
+    console.log(' Reverb WebSocket TERHUBUNG!');
     window.dispatchEvent(new Event('echo-ready'));
 });
 
 window.Echo.connector.pusher.connection.bind('error', function (err) {
-    console.error('❌ Reverb error:', err);
+    console.error(' Reverb error:', err);
 });

@@ -4,10 +4,10 @@ namespace App\Events;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class UserStatusChanged implements ShouldBroadcast
+class UserStatusChanged implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets;
 
@@ -23,7 +23,7 @@ class UserStatusChanged implements ShouldBroadcast
     public function broadcastOn(): array
     {
         // Channel publik — semua user bisa dengar status orang lain
-        return [new Channel('presence')];
+        return [new Channel('user-status')];
     }
 
     public function broadcastAs(): string

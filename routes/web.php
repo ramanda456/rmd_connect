@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,6 +32,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+
+    //Group
+    Route::get('/groups',                  [GroupController::class, 'index'])->name('group.index');
+    Route::post('/groups',                 [GroupController::class, 'store'])->name('group.store');
+    Route::get('/groups/{group}/chat',     [GroupController::class, 'chat'])->name('group.chat');
+    Route::post('/groups/send',            [GroupController::class, 'sendMessage'])->name('group.send');
+
+
 });
 
 require __DIR__.'/auth.php';

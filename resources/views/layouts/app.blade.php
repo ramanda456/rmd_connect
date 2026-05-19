@@ -10,18 +10,20 @@
 <body>
 
     <nav class="navbar navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand fw-bold">💬 RMD Connect</a>
-            @auth
-            <div class="d-flex gap-2 align-items-center">
-                <span class="text-white">{{ Auth::user()->name }}</span>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="btn btn-sm btn-outline-light">Logout</button>
-                </form>
-            </div>
-            @endauth
+    <div class="container">
+        <a class="navbar-brand fw-bold">💬 RMD Connect</a>
+        @auth
+        <div class="d-flex gap-2 align-items-center">
+            <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-light">Chat</a>
+            <a href="{{ route('group.index') }}" class="btn btn-sm btn-outline-light">👥 Group</a>
+            <span class="text-white">{{ Auth::user()->name }}</span>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="btn btn-sm btn-outline-light">Logout</button>
+            </form>
         </div>
+        @endauth
+    </div>
     </nav>
 
     <main>

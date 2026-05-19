@@ -30,25 +30,58 @@
 
 @push('scripts')
 <script>
-// Listen channel publik 'presence' untuk update status realtime
-window.Echo.channel('presence')
-    .listen('.user.status', function (data) {
-        console.log('👤 Status berubah:', data);
 
-        const badge    = document.getElementById('badge-' + data.userId);
-        const lastSeen = document.getElementById('last-seen-' + data.userId);
+function startUserStatusListener() {
 
-        if (!badge) return; // user tidak ada di daftar
+    console.log('🚀 User status listener aktif');
 
-        if (data.isOnline) {
-            badge.className   = 'badge bg-success';
-            badge.textContent = 'Online';
-            if (lastSeen) lastSeen.textContent = '';
-        } else {
-            badge.className   = 'badge bg-secondary';
-            badge.textContent = 'Offline';
-            if (lastSeen) lastSeen.textContent = 'Baru saja offline';
-        }
-    });
+    // Listen channel realtime
+    window.Echo.channel('user-status')
+        .listen('.user.status', function (data) {
+
+            console.log('👤 Status berubah:', data);
+
+            const badge = document.getElementById('badge-' + data.userId);
+            const lastSeen = document.getElementById('last-seen-' + data.userId);
+
+            if (!badge) return;
+
+            if (data.isOnline) {
+
+                badge.className = 'badge bg-success';
+                badge.textContent = 'Online';
+
+                if (lastSeen) {
+                    lastSeen.textContent = '';
+                }
+
+            } else {
+
+                badge.className = 'badge bg-secondary';
+                badge.textContent = 'Offline';
+
+                if (lastSeen) {
+                    lastSeen.textContent = 'Baru saja offline';
+                }
+            }
+        });
+}
+
+
+// Tunggu Echo benar-benar connect dulu
+if (
+    window.Echo &&
+    window.Echo.connector &&
+    window.Echo.connector.pusher.connection.state === 'connected'
+) {
+
+    startUserStatusListener();
+
+} else {
+
+    window.addEventListener('echo-ready', startUserStatusListener);
+
+}
+
 </script>
 @endpush
