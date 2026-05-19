@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h4>👋 Halo, {{ Auth::user()->name }}!</h4>
+    <h4> Halo, {{ Auth::user()->name }}!</h4>
     <hr>
     <h5>Daftar Pengguna</h5>
     <div class="list-group" id="user-list">

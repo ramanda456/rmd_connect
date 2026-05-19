@@ -5,38 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>RMD Connect</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body{
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        .navbar{
+            background: white !important;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .navbar-brand{
+            color: black !important;
+            font-weight: bold;
+        }
+
+        .nav-btn{
+            border: 1px solid #ccc;
+            background: white;
+            color: black;
+            padding: 5px 12px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover{
+            background: #eee;
+        }
+
+        .logout-btn{
+            border: 1px solid #ccc;
+            background: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+        }
+
+        .container-box{
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand fw-bold">💬 RMD Connect</a>
+<nav class="navbar">
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <a class="navbar-brand">
+            RMD Connect
+        </a>
+
         @auth
-        <div class="d-flex gap-2 align-items-center">
-            <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-light">Chat</a>
-            <a href="{{ route('group.index') }}" class="btn btn-sm btn-outline-light">👥 Group</a>
-            <span class="text-white">{{ Auth::user()->name }}</span>
+        <div class="d-flex align-items-center gap-2">
+
+            <a href="{{ route('dashboard') }}" class="nav-btn">
+                Chat
+            </a>
+
+            <a href="{{ route('group.index') }}" class="nav-btn">
+                Group
+            </a>
+
+            <span>
+                {{ Auth::user()->name }}
+            </span>
+
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button class="btn btn-sm btn-outline-light">Logout</button>
+                <button class="logout-btn">
+                    Logout
+                </button>
             </form>
+
         </div>
         @endauth
+
     </div>
-    </nav>
+</nav>
 
-    <main>
+<div class="container">
+    <div class="container-box">
         @yield('content')
-    </main>
+    </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    {{-- Vite otomatis load app.js yang sudah berisi Echo + Pusher --}}
-    @vite(['resources/js/app.js'])
+@vite(['resources/js/app.js'])
 
-    {{-- Script halaman khusus diload SETELAH app.js --}}
-    @stack('scripts')
+@stack('scripts')
 
 </body>
 </html>

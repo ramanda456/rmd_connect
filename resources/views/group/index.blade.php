@@ -5,7 +5,7 @@
 
     {{-- Form buat group baru --}}
     <div class="card mb-4">
-        <div class="card-header fw-bold">➕ Buat Group Baru</div>
+        <div class="card-header fw-bold">Buat Group Baru</div>
         <div class="card-body">
             <form method="POST" action="{{ route('group.store') }}">
                 @csrf
@@ -41,7 +41,7 @@
             @foreach($groups as $group)
                 <a href="{{ route('group.chat', $group->id) }}"
                    class="list-group-item list-group-item-action d-flex justify-content-between">
-                    <span>👥 {{ $group->name }}</span>
+                    <span> {{ $group->name }}</span>
                     <small class="text-muted">{{ $group->members->count() }} member</small>
                 </a>
             @endforeach

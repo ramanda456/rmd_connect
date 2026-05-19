@@ -7,7 +7,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
                 <a href="{{ route('group.index') }}" class="btn btn-sm btn-outline-secondary">←</a>
-                <strong>👥 {{ $group->name }}</strong>
+                <strong>{{ $group->name }}</strong>
             </div>
             <small class="text-muted">{{ $members->count() }} member</small>
         </div>
@@ -27,7 +27,7 @@
              style="height:400px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
             @foreach($messages as $msg)
                 <div class="d-flex {{ $msg->sender_id === Auth::id() ? 'justify-content-end' : 'justify-content-start' }}">
-                    <div class="rounded p-2 px-3 {{ $msg->sender_id === Auth::id() ? 'bg-primary text-white' : 'bg-light border' }}"
+                    <div class="rounded p-2 px-3 {{ $msg->sender_id === Auth::id() ? 'bg-secondary text-white' : 'bg-light border' }}"
                          style="max-width:70%;">
                         <small class="d-block fw-bold">{{ $msg->sender->name }}</small>
                         {{ $msg->body }}
@@ -44,7 +44,7 @@
             <div class="input-group">
                 <input type="text" id="message-input" class="form-control"
                        placeholder="Ketik pesan..." autocomplete="off">
-                <button id="send-btn" class="btn btn-primary">Kirim</button>
+                <button id="send-btn" class="btn btn-secondary">Kirim</button>
             </div>
         </div>
 
@@ -68,7 +68,7 @@ function groupAppendMessage(body, senderName, isMine) {
     const div = document.createElement('div');
     div.className = 'd-flex ' + (isMine ? 'justify-content-end' : 'justify-content-start');
     div.innerHTML = `
-        <div class="rounded p-2 px-3 ${isMine ? 'bg-primary text-white' : 'bg-light border'}"
+        <div class="rounded p-2 px-3 ${isMine ? 'bg-secondary text-white' : 'bg-light border'}"
              style="max-width:70%; margin-bottom:4px;">
             <small class="d-block fw-bold">${senderName}</small>
             <span>${body}</span>
